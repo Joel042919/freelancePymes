@@ -1,0 +1,17 @@
+spring:
+    profiles:
+        active: local
+
+    datasource:
+        url: jdbc:postgresql://${PGHOST}:5432/${PGDATABASE}?sslmode=${PGSSLMODE}
+        username: ${PGUSER}
+        password: ${PGPASSWORD}
+        driver-class-name: org.postgresql.Driver
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
