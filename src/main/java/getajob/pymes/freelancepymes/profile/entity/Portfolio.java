@@ -1,6 +1,10 @@
 package getajob.pymes.freelancepymes.profile.entity;
 
+import java.util.List;
 import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,10 +36,15 @@ public class Portfolio {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
+    
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "image_url")
-    private String imageUrl;
+    private List<String> imageUrl;
 
     @Column(name = "project_url")
     private String projectUrl;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "tecnologias_usadas")
+    private List<String> tecnologiasUsadas;
 }
