@@ -15,3 +15,9 @@ spring:
         properties:
             hibernate:
                 format_sql: true
+do:
+  spaces:
+    endpoint: https://sfo3.digitaloceanspaces.com # Cambia según tu región
+    bucket: tu-nombre-de-bucket
+    access-key: ${DO_ACCESS_KEY}
+    secret-key: ${DO_SECRET_KEY}
