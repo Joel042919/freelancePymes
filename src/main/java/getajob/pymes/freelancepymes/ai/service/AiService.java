@@ -84,6 +84,114 @@ public class AiService {
         );
     }
 
+    public Map<String, Object> generateQuiz(String skillName, String category) {
+        try {
+            String url = fastapiUrl + "/api/v1/ai/generate-quiz";
+            Map<String, Object> request = new HashMap<>();
+            request.put("skill", skillName);
+            request.put("category", category);
+
+            Map<?, ?> response = restTemplate.postForObject(url, request, Map.class);
+            if (response != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> result = (Map<String, Object>) response;
+                return result;
+            }
+        } catch (Exception e) {
+            // Fallback a banco de preguntas mock por categoría
+        }
+        return generateMockQuiz(skillName, category);
+    }
+
+    private Map<String, Object> generateMockQuiz(String skillName, String category) {
+        List<Map<String, Object>> questions = questionBankForCategory(skillName, category);
+        Map<String, Object> quiz = new HashMap<>();
+        quiz.put("skill", skillName);
+        quiz.put("questions", questions);
+        return quiz;
+    }
+
+    private List<Map<String, Object>> questionBankForCategory(String skillName, String category) {
+        String normalizedCategory = category == null ? "" : category.trim().toLowerCase();
+
+        if ("frontend".equals(normalizedCategory)) {
+            return List.of(
+                    question("¿Cuál es el propósito principal de " + skillName + " en el desarrollo frontend?",
+                            List.of("Construir interfaces de usuario interactivas", "Administrar bases de datos relacionales", "Orquestar contenedores en producción", "Compilar binarios nativos"), 0),
+                    question("¿Qué concepto describe mejor la reactividad en " + skillName + "?",
+                            List.of("La UI se actualiza automáticamente cuando cambia el estado", "El código se ejecuta solo una vez al iniciar", "Los estilos se calculan en el servidor", "No existe manejo de estado"), 0),
+                    question("¿Cuál de estas prácticas mejora el rendimiento al trabajar con " + skillName + "?",
+                            List.of("Memoización y renderizado condicional", "Cargar todas las imágenes sin optimizar", "Evitar el uso de componentes reutilizables", "Deshabilitar el bundling"), 0),
+                    question("¿Qué herramienta se usa comúnmente junto a " + skillName + " para el manejo de estilos?",
+                            List.of("Un framework de utilidades CSS (ej. Tailwind)", "Un compilador de Java", "Un ORM relacional", "Un motor de contenedores"), 0),
+                    question("¿Cuál es una buena práctica de accesibilidad al construir componentes con " + skillName + "?",
+                            List.of("Usar etiquetas semánticas y atributos ARIA", "Usar solo divs sin roles", "Ignorar el contraste de color", "Evitar el uso de labels en formularios"), 0)
+            );
+        }
+
+        if ("devops".equals(normalizedCategory)) {
+            return List.of(
+                    question("¿Cuál es el objetivo principal de " + skillName + "?",
+                            List.of("Empaquetar y aislar aplicaciones en contenedores", "Diseñar interfaces gráficas", "Ejecutar consultas SQL", "Renderizar componentes en el navegador"), 0),
+                    question("¿Qué archivo define cómo se construye una imagen en " + skillName + "?",
+                            List.of("Un Dockerfile", "Un archivo .css", "Un archivo .jsx", "Un archivo .sql"), 0),
+                    question("¿Qué comando permite ver los contenedores en ejecución?",
+                            List.of("docker ps", "docker delete", "docker paint", "docker fetch"), 0),
+                    question("¿Qué ventaja ofrece la orquestación de contenedores en producción?",
+                            List.of("Escalado y recuperación automática de servicios", "Mayor tamaño de las imágenes", "Menor portabilidad del código", "Acoplamiento fuerte entre servicios"), 0),
+                    question("¿Qué práctica reduce el tamaño de una imagen de contenedor?",
+                            List.of("Usar imágenes base ligeras (multi-stage build)", "Incluir todas las dependencias de desarrollo", "Evitar el uso de .dockerignore", "Copiar el repositorio completo sin filtrar"), 0)
+            );
+        }
+
+        // Backend / genérico
+        return List.of(
+                question("¿Cuál es un beneficio clave de usar " + skillName + " en el backend?",
+                        List.of("Manejo robusto de lógica de negocio y persistencia", "Renderizado de componentes visuales", "Diseño de paletas de colores", "Compresión de imágenes"), 0),
+                question("¿Qué patrón se usa comúnmente para separar responsabilidades en aplicaciones con " + skillName + "?",
+                        List.of("Arquitectura en capas (controller/service/repository)", "Todo el código en un único archivo", "Mezclar SQL directamente en la interfaz gráfica", "Ignorar la inyección de dependencias"), 0),
+                question("¿Qué mecanismo se usa típicamente para proteger endpoints en " + skillName + "?",
+                        List.of("Autenticación y autorización basada en tokens (JWT)", "Dejar todos los endpoints públicos", "Usar solo variables globales", "Deshabilitar HTTPS"), 0),
+                question("¿Qué es una transacción en el contexto de " + skillName + " y bases de datos?",
+                        List.of("Un conjunto de operaciones que se aplican de forma atómica", "Un archivo de configuración", "Un componente visual", "Una hoja de estilos"), 0),
+                question("¿Qué tipo de pruebas son más adecuadas para validar la lógica de un servicio en " + skillName + "?",
+                        List.of("Pruebas unitarias con mocks de las dependencias", "Pruebas manuales exclusivamente", "Ninguna prueba es necesaria", "Solo pruebas de estilos CSS"), 0)
+        );
+    }
+
+    private Map<String, Object> question(String text, List<String> options, int correctIndex) {
+        Map<String, Object> q = new HashMap<>();
+        q.put("question", text);
+        q.put("options", options);
+        q.put("correctIndex", correctIndex);
+        return q;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> gradeQuiz(Map<String, Object> quizData, Map<Integer, Integer> answers) {
+        List<Map<String, Object>> questions = (List<Map<String, Object>>) quizData.get("questions");
+        int total = questions.size();
+        int correct = 0;
+
+        for (int i = 0; i < total; i++) {
+            Integer correctIndex = (Integer) questions.get(i).get("correctIndex");
+            Integer submitted = answers.get(i);
+            if (correctIndex != null && correctIndex.equals(submitted)) {
+                correct++;
+            }
+        }
+
+        double score = total == 0 ? 0.0 : (correct * 100.0) / total;
+        boolean passed = score >= 70.0;
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("score", score);
+        result.put("passed", passed);
+        result.put("correctAnswers", correct);
+        result.put("totalQuestions", total);
+        return result;
+    }
+
     public Map<String, Object> resolveDispute(String contractText, String evidenceText) {
         try {
             String url = fastapiUrl + "/api/v1/ai/resolve-dispute";

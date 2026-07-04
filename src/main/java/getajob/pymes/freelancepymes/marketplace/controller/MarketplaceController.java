@@ -1,7 +1,12 @@
 package getajob.pymes.freelancepymes.marketplace.controller;
 
+import getajob.pymes.freelancepymes.contract.dto.AcceptApplicationRequest;
+import getajob.pymes.freelancepymes.contract.dto.ContractResponse;
+import getajob.pymes.freelancepymes.contract.service.ContractService;
 import getajob.pymes.freelancepymes.marketplace.dto.ApplicationResponse;
 import getajob.pymes.freelancepymes.marketplace.dto.ApplyRequest;
+import getajob.pymes.freelancepymes.marketplace.dto.OfferResponse;
+import getajob.pymes.freelancepymes.marketplace.dto.ReceivedApplicationResponse;
 import getajob.pymes.freelancepymes.marketplace.dto.SkillGapResponse;
 import getajob.pymes.freelancepymes.marketplace.exception.SkillGapException;
 import getajob.pymes.freelancepymes.marketplace.service.MarketplaceService;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,6 +39,33 @@ import java.util.stream.Collectors;
 public class MarketplaceController {
 
     private final MarketplaceService marketplaceService;
+    private final ContractService contractService;
+
+    @GetMapping("/applications/received")
+    @PreAuthorize("hasRole('PYME')")
+    public ResponseEntity<List<ReceivedApplicationResponse>> getReceivedApplications(Principal principal) {
+        return ResponseEntity.ok(marketplaceService.getReceivedApplications(principal.getName()));
+    }
+
+    @PostMapping("/applications/{applicationId}/accept")
+    @PreAuthorize("hasRole('PYME')")
+    public ResponseEntity<ContractResponse> acceptApplication(
+            @PathVariable UUID applicationId,
+            @Valid @RequestBody AcceptApplicationRequest request,
+            Principal principal
+    ) {
+        return ResponseEntity.ok(contractService.acceptApplication(applicationId, request.getMilestones(), principal.getName()));
+    }
+
+    @GetMapping("/offers")
+    public ResponseEntity<List<OfferResponse>> listOffers() {
+        return ResponseEntity.ok(marketplaceService.listOpenOffers());
+    }
+
+    @GetMapping("/offers/{offerId}")
+    public ResponseEntity<OfferResponse> getOffer(@PathVariable UUID offerId) {
+        return ResponseEntity.ok(marketplaceService.getOffer(offerId));
+    }
 
     @GetMapping("/offers/{offerId}/check-gap")
     @PreAuthorize("hasRole('FREELANCER')")

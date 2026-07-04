@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface AssessmentRepository extends JpaRepository<Assessment, UUID> {
     List<Assessment> findByFreelancerAndPassed(FreelancerProfile freelancer, Boolean passed);
+    List<Assessment> findByFreelancer(FreelancerProfile freelancer);
 }

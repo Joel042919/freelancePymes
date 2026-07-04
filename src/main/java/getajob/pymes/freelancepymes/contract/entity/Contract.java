@@ -33,10 +33,11 @@ public class Contract {
     @JoinColumn(name = "application_id", unique = true)
     private Application application;
 
-    @Column(name = "digital_signature_pyme")
+    // TEXT en vez de varchar(255): la firma puede ser una imagen PNG en base64 (varios KB).
+    @Column(name = "digital_signature_pyme", columnDefinition = "TEXT")
     private String digitalSignaturePyme;
 
-    @Column(name = "digital_signature_freelancer")
+    @Column(name = "digital_signature_freelancer", columnDefinition = "TEXT")
     private String digitalSignatureFreelancer;
 
     @Enumerated(EnumType.STRING)

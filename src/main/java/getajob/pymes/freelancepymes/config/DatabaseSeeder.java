@@ -32,6 +32,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -52,10 +55,21 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final ContractRepository contractRepository;
     private final MilestoneRepository milestoneRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DataSource dataSource;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        // 0. Ampliar columnas de firma digital: eran varchar(255) (pensadas para un texto corto
+        // de ejemplo), pero la firma dibujada a mano se guarda como imagen PNG en base64, que
+        // supera ampliamente ese límite. Hibernate con ddl-auto=update no altera columnas ya
+        // existentes, así que se hace manualmente aquí. Es una operación idempotente y segura
+        // (solo amplía el tipo, no borra ni trunca datos existentes).
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute("ALTER TABLE contracts ALTER COLUMN digital_signature_pyme TYPE TEXT");
+            statement.execute("ALTER TABLE contracts ALTER COLUMN digital_signature_freelancer TYPE TEXT");
+        }
+
         // 1. Seed Roles
         for (RoleName roleName : RoleName.values()) {
             if (!roleRepository.existsByName(roleName)) {
@@ -171,6 +185,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 offer.setRequiredSkills(Set.of(java, react));
                 jobOfferRepository.save(offer);
             }
+
         }
 
         // 6. Seed Application, Contract and Milestone for Dispute resolution testing
