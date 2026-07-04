@@ -32,7 +32,7 @@ public class Role {
     @Column(nullable=false,length=20)
     private RoleName name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "permisos_role", // Esto crea la tabla intermedia
         joinColumns = @JoinColumn(name = "id_role"),

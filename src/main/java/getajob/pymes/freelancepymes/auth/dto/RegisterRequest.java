@@ -31,4 +31,8 @@ public class RegisterRequest {
             message = "El rol debe ser FREELANCER o PYME."
     )
     private String role;
+
+    private String firstName;
+
+    private String lastName;
 }

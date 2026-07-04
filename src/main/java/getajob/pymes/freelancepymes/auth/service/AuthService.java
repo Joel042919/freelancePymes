@@ -71,8 +71,8 @@ public class AuthService {
         if (roleName == RoleName.FREELANCER) {
             FreelancerProfile freelancerProfile = new FreelancerProfile();
             freelancerProfile.setUser(savedUser);
-            freelancerProfile.setFirstname("");
-            freelancerProfile.setLastName("");
+            freelancerProfile.setFirstname(request.getFirstName() != null ? request.getFirstName() : "");
+            freelancerProfile.setLastName(request.getLastName() != null ? request.getLastName() : "");
             freelancerProfile.setBio("");
             freelanceProfileRepository.save(freelancerProfile);
         } else if (roleName == RoleName.PYME) {
