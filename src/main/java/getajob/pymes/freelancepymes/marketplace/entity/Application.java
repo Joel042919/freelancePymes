@@ -43,6 +43,7 @@ public class Application {
     private Integer estimatedDays;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationStatus status; // Crea el enum: PENDING, ACCEPTED, REJECTED
+    @Column(columnDefinition = "application_status")
+    private ApplicationStatus status;
 }
 

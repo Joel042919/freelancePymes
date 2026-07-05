@@ -7,10 +7,13 @@ CREATE TYPE role_name AS ENUM ('FREELANCER', 'PYME', 'ADMIN');
 CREATE TYPE audit_action AS ENUM ('INSERT', 'UPDATE', 'DELETE');
 CREATE TYPE contract_status AS ENUM ('DRAFT', 'SIGNED', 'COMPLETED');
 CREATE TYPE milestone_status AS ENUM ('PENDING_FUNDING', 'FUNDED', 'DELIVERED', 'APPROVED', 'DISPUTED', 'PAID');
+CREATE TYPE offer_milestone_status AS ENUM ('PENDIENTE_FINANCIAMIENTO', 'FONDEADO', 'ENTREGADO', 'APROBADO', 'EN_DISPUTA', 'PAGADO');
 CREATE TYPE dispute_status AS ENUM ('PENDING_AI_REVIEW', 'WAITING_PARTIES', 'ESCALATED_TO_ADMIN', 'RESOLVED');
 CREATE TYPE application_status AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED');
-CREATE TYPE offer_status AS ENUM ('OPEN', 'IN_PROGRESS', 'CLOSED');
-CREATE TYPE budget_type AS ENUM ('FIXED', 'HOURLY');
+CREATE TYPE offer_status AS ENUM ('ABIERTA', 'EN_PROCESO', 'COMPLETADA', 'CANCELADA');
+CREATE TYPE budget_type AS ENUM ('FIJO', 'POR_HORA');
+CREATE TYPE modality_type AS ENUM ('REMOTO', 'PRESENCIAL', 'HIBRIDO');
+CREATE TYPE project_category AS ENUM ('DESARROLLO_WEB', 'DESARROLLO_MOVIL', 'DISENO_GRAFICO', 'MARKETING_DIGITAL', 'CONTABILIDAD', 'CONSULTORIA', 'TRADUCCION', 'REDACCION', 'OTROS');
 CREATE TYPE payment_method AS ENUM ('CREDIT_CARD', 'PAYPAL', 'BANK_TRANSFER', 'PLATFORM_BALANCE');
 CREATE TYPE payment_status AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED');
 CREATE TYPE payment_type AS ENUM ('ESCROW_FUNDING', 'FREELANCER_PAYOUT', 'REFUND');
@@ -128,12 +131,18 @@ CREATE TABLE pyme_profiles (
 CREATE TABLE job_offers (
     id UUID PRIMARY KEY,
     pyme_id UUID NOT NULL REFERENCES pyme_profiles(user_id),
-    title VARCHAR(255),
+    title VARCHAR(255) NOT NULL,
     description TEXT,
     budget_type budget_type,
+    modality modality_type,
+    project_category project_category,
+    estimated_days INTEGER,
     total_budget DOUBLE PRECISION,
-    status offer_status,
-    -- required skills handled by offer_skills
+    min_budget DOUBLE PRECISION,
+    max_budget DOUBLE PRECISION,
+    location VARCHAR(255),
+    status offer_status NOT NULL DEFAULT 'ABIERTA',
+    published_at DATE DEFAULT CURRENT_DATE,
     CONSTRAINT fk_job_offers_pyme FOREIGN KEY (pyme_id) REFERENCES pyme_profiles(user_id)
 );
 
@@ -170,6 +179,17 @@ CREATE TABLE milestones (
     amount DOUBLE PRECISION,
     deadline DATE,
     status milestone_status
+);
+
+-- OFFER MILESTONES (hitos definidos al publicar la oferta)
+CREATE TABLE offer_milestones (
+    id UUID PRIMARY KEY,
+    offer_id UUID NOT NULL REFERENCES job_offers(id),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    amount DOUBLE PRECISION NOT NULL,
+    status offer_milestone_status NOT NULL DEFAULT 'PENDIENTE_FINANCIAMIENTO',
+    due_date DATE NOT NULL
 );
 
 -- DELIVERABLES
