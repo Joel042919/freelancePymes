@@ -19,16 +19,10 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "La contraseña es requerida.")
-    @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&)."
-    )
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&).")
     private String password;
 
     @NotBlank(message = "El rol es requerido.")
-    @Pattern(
-            regexp = "^(FREELANCER|PYME)$",
-            message = "El rol debe ser FREELANCER o PYME."
-    )
+    @Pattern(regexp = "^(FREELANCER|PYME)$", message = "El rol debe ser FREELANCER o PYME.")
     private String role;
 }
