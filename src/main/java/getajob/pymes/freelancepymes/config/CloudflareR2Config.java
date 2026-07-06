@@ -11,19 +11,17 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Configuration
-public class DigitalOceanConfig {
-    @Value("${do.spaces.endpoint}")
+public class CloudflareR2Config {
+    @Value("${cloudflare.r2.endpoint}")
     private String endpoint;
 
-    @Value("${do.spaces.bucket}")
-    private String bucketName;
-
-    @Value("${do.spaces.access-key}")
+    @Value("${cloudflare.r2.access-key}")
     private String accessKey;
 
-    @Value("${do.spaces.secret-key}")
+    @Value("${cloudflare.r2.secret-key}")
     private String secretKey;
 
     @Bean
@@ -31,7 +29,7 @@ public class DigitalOceanConfig {
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
-                .region(Region.of("sfo3"))
+                .region(Region.US_EAST_1)
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .serviceConfiguration(S3Configuration.builder()
                     .pathStyleAccessEnabled(true)
@@ -39,4 +37,16 @@ public class DigitalOceanConfig {
                 .build();
     }
 
+    @Bean
+    public S3Presigner s3Presigner() {
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
+        return S3Presigner.builder()
+                .endpointOverride(URI.create(endpoint))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .serviceConfiguration(S3Configuration.builder()
+                    .pathStyleAccessEnabled(true)
+                    .build())
+                .build();
+    }
 }

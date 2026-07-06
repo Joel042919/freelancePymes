@@ -1,0 +1,11 @@
+paypal:
+  client-id: AU7MKeI9zrkyXm8t_iHwQbR85Z6wUEQKJw5gJbe_ylMsuHgw4cL9XByjF9w5noc9XbBxVrdVDsyWAy_N
+  client-secret: EN8ICxlx_lHw-5VWYWTRxKOiZYFJX5tref9jUEsL22YGjCjnzEOiloD3F-wEJ9LckaeIIm6icAK-hDGS
+  mode: sandbox
+
+cloudflare:
+  r2:
+    endpoint: https://7649d11884d4e4cdbd2ac86deb11486e.r2.cloudflarestorage.com
+    bucket: pymes
+    access-key: 33d76a66f9273df33c54891e2dc00bc6
+    secret-key: 73aeeadd1a2e22441e4f4bf4f0e5da4ae8425b2ae359abf293104ce1047b65b9

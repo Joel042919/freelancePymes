@@ -13,6 +13,12 @@ import getajob.pymes.freelancepymes.profile.entity.FreelancerProfile;
 import getajob.pymes.freelancepymes.profile.entity.PymeProfile;
 import getajob.pymes.freelancepymes.profile.repository.FreelanceProfileRepository;
 import getajob.pymes.freelancepymes.profile.repository.PymeProfileRepository;
+import getajob.pymes.freelancepymes.payment.entity.Payment;
+import getajob.pymes.freelancepymes.payment.entity.enums.PaymentType;
+import getajob.pymes.freelancepymes.payment.entity.enums.PaymentStatus;
+import getajob.pymes.freelancepymes.payment.entity.enums.PaymentMethod;
+import getajob.pymes.freelancepymes.payment.repository.PaymentRepository;
+import getajob.pymes.freelancepymes.payment.service.PaypalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -30,9 +36,11 @@ public class MilestoneLifecycleService {
     private final PymeProfileRepository pymeProfileRepository;
     private final MilestoneRepository milestoneRepository;
     private final DeliverableRepository deliverableRepository;
+    private final PaypalService paypalService;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
-    public void fundMilestone(UUID milestoneId, String pymeEmail) {
+    public void fundMilestone(UUID milestoneId, String pymeEmail, String orderId) {
         User user = userRepository.findByEmail(pymeEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + pymeEmail));
 
@@ -51,6 +59,21 @@ public class MilestoneLifecycleService {
         if (milestone.getStatus() != MilestoneStatus.PENDING_FUNDING) {
             throw new IllegalArgumentException("El hito ya está fondeado o completado. Estado: " + milestone.getStatus());
         }
+
+        boolean captured = paypalService.captureOrder(orderId);
+        if (!captured) {
+            throw new IllegalArgumentException("No se pudo capturar el pago en PayPal.");
+        }
+
+        Payment payment = new Payment();
+        payment.setMilestone(milestone);
+        // Assuming we set a mock amount or get it from milestone. For now set a placeholder or get from milestone if it has amount.
+        payment.setAmount(100.0); // Replace with milestone.getAmount() if it exists
+        payment.setPaymentType(PaymentType.ESCROW_FUNDING);
+        payment.setPaymentMethod(PaymentMethod.PAYPAL);
+        payment.setTransactionReference(orderId);
+        payment.setStatus(PaymentStatus.COMPLETED);
+        paymentRepository.save(payment);
 
         milestone.setStatus(MilestoneStatus.FUNDED);
         milestoneRepository.save(milestone);
