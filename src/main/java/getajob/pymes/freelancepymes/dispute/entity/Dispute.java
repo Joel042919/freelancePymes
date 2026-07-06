@@ -38,7 +38,7 @@ public class Dispute {
     private Milestone milestone;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "ai_resolution_report", columnDefinition = "jsonb")
+    @Column(name = "ai_resolution_report")
     private Map<String, Object> aiResolutionReport;
 
     @Enumerated(EnumType.STRING)

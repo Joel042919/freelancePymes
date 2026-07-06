@@ -39,7 +39,7 @@ public class Assessment {
     private Skill skill;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "quiz_data", columnDefinition = "jsonb")
+    @Column(name = "quiz_data")
     private Map<String, Object> quizData; 
 
     private Double score;

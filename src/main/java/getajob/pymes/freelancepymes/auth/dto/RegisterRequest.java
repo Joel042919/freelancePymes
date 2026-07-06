@@ -1,22 +1,28 @@
 package getajob.pymes.freelancepymes.auth.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public abstract class RegisterRequest {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class RegisterRequest {
 
-    @NotBlank(message = "Email is required")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email address")
+    @NotBlank(message = "El correo electrónico es requerido.")
+    @Email(message = "El formato de correo electrónico no es válido.")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[A-Z]).*$", message = "Password must contain at least one uppercase letter")
-    @Pattern(regexp = "^(?=.*[a-z]).*$", message = "Password must contain at least one lowercase letter")
-    @Pattern(regexp = "^(?=.*[0-9]).*$", message = "Password must contain at least one number")
-    @Pattern(regexp = "^(?=.*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?]).*$", message = "Password must contain at least one special character")
-    @Pattern(regexp = ".{8,}$", message = "Password must be at least 8 characters long")
+    @NotBlank(message = "La contraseña es requerida.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&).")
     private String password;
 
+    @NotBlank(message = "El rol es requerido.")
+    @Pattern(regexp = "^(FREELANCER|PYME)$", message = "El rol debe ser FREELANCER o PYME.")
+    private String role;
 }

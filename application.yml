@@ -3,9 +3,9 @@ spring:
         active: local
 
     datasource:
-        url: jdbc:postgresql://${PGHOST}:5432/${PGDATABASE}?sslmode=${PGSSLMODE}
-        username: ${PGUSER}
-        password: ${PGPASSWORD}
+        url: jdbc:postgresql://${PGHOST:localhost}:5432/${PGDATABASE:freelance_pymes}?sslmode=${PGSSLMODE:disable}
+        username: ${PGUSER:postgres}
+        password: ${PGPASSWORD:0323}
         driver-class-name: org.postgresql.Driver
 
     jpa:
@@ -15,3 +15,18 @@ spring:
         properties:
             hibernate:
                 format_sql: true
+do:
+  spaces:
+    endpoint: https://sfo3.digitaloceanspaces.com # Cambia según tu región
+    bucket: tu-nombre-de-bucket
+    access-key: ${DO_ACCESS_KEY:mock_access_key}
+    secret-key: ${DO_SECRET_KEY:mock_secret_key}
+app:
+  jwt:
+    secret: 9a4f2c8d3b7a1e5f8g9h0i1j2k3l4m5n6o7p8q9r0s1t2u3v4w5x6y7z8a9b0c1d
+    expiration-ms: 86400000 # 24 hours
+  oauth2:
+    google:
+      client-id: ${GOOGLE_CLIENT_ID:mock_google_client_id}
+  ai:
+    fastapi-url: ${FASTAPI_URL:http://localhost:8000}

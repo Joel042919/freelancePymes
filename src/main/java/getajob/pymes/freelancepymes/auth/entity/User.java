@@ -14,9 +14,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.FetchType;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data //genera getter y setters, tostring, equal y hashcode
 @NoArgsConstructor //constructor vacio (jpa)
@@ -24,7 +32,7 @@ import jakarta.persistence.Column;
 @Builder //Permite crear objetos con User.builder().email("...").build()
 @Entity
 @Table(name="users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
@@ -32,6 +40,7 @@ public class User {
     @Column(nullable = false,unique=true)
     private String email;
 
+    @JsonIgnore
     @Column(name="password")
     private String password;
 
@@ -49,6 +58,42 @@ public class User {
     @JoinColumn(name="role_id")
     private Role role;
 
-    
-    
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        if (role != null) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName().name()));
+            if (role.getPermisos() != null) {
+                role.getPermisos().forEach(permiso -> 
+                    authorities.add(new SimpleGrantedAuthority(permiso.getName().name()))
+                );
+            }
+        }
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return Boolean.TRUE.equals(isActive);
+    }
 }

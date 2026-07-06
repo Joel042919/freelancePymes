@@ -19,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="freelancer_profiles")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -26,6 +28,7 @@ public class FreelancerProfile {
     @Id
     private UUID id;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId //El ID de esta tabla será el mismo ID del User
     @JoinColumn(name="user_id")
