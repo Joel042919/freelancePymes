@@ -36,7 +36,8 @@ public class AuditLog {
     private UUID recordId;
 
     @Enumerated(EnumType.STRING)
-    private AuditAction action; // Enum: INSERT, UPDATE, DELETE
+    @Column(columnDefinition = "audit_action")
+    private AuditAction action;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "old_data", columnDefinition = "jsonb")

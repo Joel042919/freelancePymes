@@ -42,5 +42,6 @@ public class Dispute {
     private Map<String, Object> aiResolutionReport;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "dispute_status")
     private DisputeStatus status;
 }

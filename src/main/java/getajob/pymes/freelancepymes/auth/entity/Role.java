@@ -29,10 +29,10 @@ public class Role {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=20)
+    @Column(columnDefinition = "role_name", nullable = false, length = 20)
     private RoleName name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "permisos_role", // Esto crea la tabla intermedia
         joinColumns = @JoinColumn(name = "id_role"),
