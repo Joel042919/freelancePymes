@@ -17,14 +17,16 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     @Override
-    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con el correo: " + username));
 
-        // Se inicializan los proxies perezosos de rol/permisos dentro de esta transacción.
-        // El JwtAuthenticationFilter llama a getAuthorities() fuera de cualquier sesión de
-        // Hibernate (corre antes de que open-in-view abra el EntityManager de la vista),
+        // Se inicializan los proxies perezosos de rol/permisos dentro de esta
+        // transacción.
+        // El JwtAuthenticationFilter llama a getAuthorities() fuera de cualquier sesión
+        // de
+        // Hibernate (corre antes de que open-in-view abra el EntityManager de la
+        // vista),
         // así que si no se fuerza aquí, esa llamada lanza LazyInitializationException.
         if (user.getRole() != null) {
             user.getRole().getName();

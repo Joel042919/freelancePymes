@@ -17,14 +17,14 @@ spring:
                 format_sql: true
 do:
   spaces:
-    endpoint: https://sfo3.digitaloceanspaces.com # Cambia según tu región
+    endpoint: https://sfo3.digitaloceanspaces.com
     bucket: tu-nombre-de-bucket
     access-key: ${DO_ACCESS_KEY:mock_access_key}
     secret-key: ${DO_SECRET_KEY:mock_secret_key}
 app:
   jwt:
     secret: 9a4f2c8d3b7a1e5f8g9h0i1j2k3l4m5n6o7p8q9r0s1t2u3v4w5x6y7z8a9b0c1d
-    expiration-ms: 86400000 # 24 hours
+    expiration-ms: 86400000
   oauth2:
     google:
       client-id: ${GOOGLE_CLIENT_ID:mock_google_client_id}

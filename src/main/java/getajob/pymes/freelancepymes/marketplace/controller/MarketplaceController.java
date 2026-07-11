@@ -10,7 +10,9 @@ import getajob.pymes.freelancepymes.marketplace.dto.ReceivedApplicationResponse;
 import getajob.pymes.freelancepymes.marketplace.dto.SkillGapResponse;
 import getajob.pymes.freelancepymes.marketplace.exception.SkillGapException;
 import getajob.pymes.freelancepymes.marketplace.service.MarketplaceService;
+import getajob.pymes.freelancepymes.profile.dto.SkillDTO;
 import getajob.pymes.freelancepymes.profile.entity.Skill;
+import getajob.pymes.freelancepymes.profile.service.FreelancerProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,7 @@ public class MarketplaceController {
 
     private final MarketplaceService marketplaceService;
     private final ContractService contractService;
+    private final FreelancerProfileService freelancerProfileService;
 
     @GetMapping("/applications/received")
     @PreAuthorize("hasRole('PYME')")
@@ -84,6 +87,12 @@ public class MarketplaceController {
             Principal principal
     ) {
         return ResponseEntity.ok(marketplaceService.applyToOffer(offerId, request, principal.getName()));
+    }
+
+    @GetMapping("/skills")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<SkillDTO>> getAllSkills() {
+        return ResponseEntity.ok(freelancerProfileService.getAllAvailableSkills());
     }
 
     @ExceptionHandler(SkillGapException.class)
