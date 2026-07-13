@@ -162,9 +162,9 @@ public class DatabaseSeeder implements CommandLineRunner {
                 offer.setPyme(savedPyme);
                 offer.setTitle("Desarrollador Java y Spring Boot (100% Match)");
                 offer.setDescription("Buscamos un desarrollador backend con experiencia en Java y Spring Boot.");
-                offer.setBudgetType(BudgetType.FIXED);
+                offer.setBudgetType(BudgetType.FIJO);
                 offer.setTotalBudget(1500.0);
-                offer.setStatus(OfferStatus.OPEN);
+                offer.setStatus(OfferStatus.ABIERTA);
                 offer.setRequiredSkills(Set.of(java, spring));
                 offer1 = jobOfferRepository.save(offer);
             } else {
@@ -179,9 +179,9 @@ public class DatabaseSeeder implements CommandLineRunner {
                 offer.setPyme(savedPyme);
                 offer.setTitle("Desarrollador Fullstack Java y React (Skill Gap)");
                 offer.setDescription("Buscamos desarrollador para migrar portal heredado a React con backend Java.");
-                offer.setBudgetType(BudgetType.HOURLY);
+                offer.setBudgetType(BudgetType.POR_HORA);
                 offer.setTotalBudget(2500.0);
-                offer.setStatus(OfferStatus.OPEN);
+                offer.setStatus(OfferStatus.ABIERTA);
                 offer.setRequiredSkills(Set.of(java, react));
                 jobOfferRepository.save(offer);
             }

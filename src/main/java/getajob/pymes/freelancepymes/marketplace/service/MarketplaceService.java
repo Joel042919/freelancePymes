@@ -45,7 +45,7 @@ public class MarketplaceService {
     private final AiService aiService;
 
     public List<OfferResponse> listOpenOffers() {
-        return jobOfferRepository.findByStatus(OfferStatus.OPEN).stream()
+        return jobOfferRepository.findByStatus(OfferStatus.ABIERTA).stream()
                 .map(this::toOfferResponse)
                 .collect(Collectors.toList());
     }

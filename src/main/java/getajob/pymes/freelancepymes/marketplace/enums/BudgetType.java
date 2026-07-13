@@ -1,6 +1,6 @@
 package getajob.pymes.freelancepymes.marketplace.enums;
 
 public enum BudgetType {
-    FIXED,
-    HOURLY
+    FIJO,
+    POR_HORA
 }

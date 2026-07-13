@@ -27,39 +27,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        System.out.println("🔍 JWT Filter - URL: " + request.getRequestURI());
+
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("⚠️  No Authorization header or not Bearer token");
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
+        final String jwt = authHeader.substring(7);
+        System.out.println("🔑 Token recibido: " + jwt.substring(0, Math.min(20, jwt.length())) + "...");
+
         try {
-            userEmail = jwtService.extractUsername(jwt);
+            final String userEmail = jwtService.extractUsername(jwt);
+            System.out.println("👤 Email extraído del token: " + userEmail);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
+                    System.out.println("✅ Token válido, autenticando usuario...");
+
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
-                            userDetails.getAuthorities()
-                    );
+                            userDetails.getAuthorities());
+
                     authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
+                            new WebAuthenticationDetailsSource().buildDetails(request));
+
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("✅ Usuario autenticado: " + userEmail);
+                    System.out.println("✅ Authorities: " + userDetails.getAuthorities());
+                } else {
+                    System.out.println("❌ Token INVÁLIDO o EXPIRADO");
                 }
             }
         } catch (Exception e) {
-            // Log or handle token parsing errors (expired, signature invalid, etc.)
-            // We let request continue or fail, Spring Security will deny if authenticated resource is requested
+            System.err.println("❌ Error procesando JWT: " + e.getMessage());
+            e.printStackTrace();
         }
 
         filterChain.doFilter(request, response);

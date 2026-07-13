@@ -1,4 +1,4 @@
-package getajob.pymes.freelancepymes.contract.dto;
+package getajob.pymes.freelancepymes.marketplace.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,20 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MilestoneResponse {
+public class MilestoneResponseDTO {
+
     private UUID id;
     private String title;
+    private String description;
     private Double amount;
-    private LocalDate deadline;
     private String status;
-    private String evidenceUrl;
-    private String evidenceNotes;
-    private LocalDateTime evidenceSubmittedAt;
+    private LocalDate dueDate;
 }

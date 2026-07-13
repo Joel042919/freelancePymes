@@ -25,4 +25,8 @@ public class RegisterRequest {
     @NotBlank(message = "El rol es requerido.")
     @Pattern(regexp = "^(FREELANCER|PYME)$", message = "El rol debe ser FREELANCER o PYME.")
     private String role;
+
+    private String firstName;
+
+    private String lastName;
 }

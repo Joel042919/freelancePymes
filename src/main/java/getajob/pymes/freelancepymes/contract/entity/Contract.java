@@ -41,5 +41,6 @@ public class Contract {
     private String digitalSignatureFreelancer;
 
     @Enumerated(EnumType.STRING)
-    private ContractStatus status; // Enum: DRAFT, SIGNED, COMPLETED
+    @Column(columnDefinition = "contract_status")
+    private ContractStatus status;
 }
