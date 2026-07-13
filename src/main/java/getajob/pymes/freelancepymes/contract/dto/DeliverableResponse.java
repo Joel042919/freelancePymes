@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,13 +12,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MilestoneResponse {
+public class DeliverableResponse {
     private UUID id;
-    private String title;
-    private Double amount;
-    private LocalDate deadline;
-    private String status;
+    private UUID milestoneId;
     private String evidenceUrl;
-    private String evidenceNotes;
-    private LocalDateTime evidenceSubmittedAt;
+    private String notes;
+    private LocalDateTime submittedAt;
 }

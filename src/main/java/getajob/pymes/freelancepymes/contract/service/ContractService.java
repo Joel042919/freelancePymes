@@ -6,10 +6,12 @@ import getajob.pymes.freelancepymes.contract.dto.ContractResponse;
 import getajob.pymes.freelancepymes.contract.dto.MilestoneRequest;
 import getajob.pymes.freelancepymes.contract.dto.MilestoneResponse;
 import getajob.pymes.freelancepymes.contract.entity.Contract;
+import getajob.pymes.freelancepymes.contract.entity.Deliverable;
 import getajob.pymes.freelancepymes.contract.entity.Milestone;
 import getajob.pymes.freelancepymes.contract.enums.ContractStatus;
 import getajob.pymes.freelancepymes.contract.enums.MilestoneStatus;
 import getajob.pymes.freelancepymes.contract.repository.ContractRepository;
+import getajob.pymes.freelancepymes.contract.repository.DeliverableRepository;
 import getajob.pymes.freelancepymes.contract.repository.MilestoneRepository;
 import getajob.pymes.freelancepymes.marketplace.entity.Application;
 import getajob.pymes.freelancepymes.marketplace.enums.ApplicationStatus;
@@ -34,6 +36,7 @@ public class ContractService {
     private final ApplicationRepository applicationRepository;
     private final ContractRepository contractRepository;
     private final MilestoneRepository milestoneRepository;
+    private final DeliverableRepository deliverableRepository;
 
     @Transactional
     public ContractResponse acceptApplication(UUID applicationId, List<MilestoneRequest> milestoneRequests, String pymeEmail) {
@@ -150,12 +153,18 @@ public class ContractService {
     }
 
     private MilestoneResponse toMilestoneResponse(Milestone milestone) {
+        Deliverable deliverable = deliverableRepository.findFirstByMilestoneOrderBySubmittedAtDesc(milestone)
+                .orElse(null);
+
         return MilestoneResponse.builder()
                 .id(milestone.getId())
                 .title(milestone.getTitle())
                 .amount(milestone.getAmount())
                 .deadline(milestone.getDeadline())
                 .status(milestone.getStatus().name())
+                .evidenceUrl(deliverable != null ? deliverable.getEvidenceUrl() : null)
+                .evidenceNotes(deliverable != null ? deliverable.getNotes() : null)
+                .evidenceSubmittedAt(deliverable != null ? deliverable.getSubmittedAt() : null)
                 .build();
     }
 }
