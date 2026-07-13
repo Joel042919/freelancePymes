@@ -3,5 +3,8 @@ package getajob.pymes.freelancepymes.marketplace.enums;
 public enum ModalityType {
     REMOTO,
     PRESENCIAL,
-    HIBRIDO
+    HIBRIDO,
+    REMOTE,
+    ON_SITE,
+    HYBRID
 }

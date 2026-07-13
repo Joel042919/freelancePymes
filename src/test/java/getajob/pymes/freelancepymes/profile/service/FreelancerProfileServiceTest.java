@@ -157,7 +157,6 @@ class FreelancerProfileServiceTest {
     void removeSkill_existingSkill_removesSkillFromProfile() {
         when(profileRepository.findById(userId)).thenReturn(Optional.of(profile));
         when(skillRepository.findById(1)).thenReturn(Optional.of(javaSkill));
-        when(profileRepository.save(any(FreelancerProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         FreelancerProfileResponseDTO result = profileService.removeSkill(userId, 1);
 

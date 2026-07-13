@@ -44,6 +44,8 @@ class ContractServiceTest {
     private ContractRepository contractRepository;
     @Mock
     private MilestoneRepository milestoneRepository;
+    @Mock
+    private getajob.pymes.freelancepymes.contract.repository.DeliverableRepository deliverableRepository;
 
     @InjectMocks
     private ContractService contractService;

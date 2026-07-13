@@ -28,6 +28,7 @@ import getajob.pymes.freelancepymes.profile.repository.PymeProfileRepository;
 import getajob.pymes.freelancepymes.profile.repository.SkillRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class DatabaseSeeder implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
@@ -68,6 +70,8 @@ public class DatabaseSeeder implements CommandLineRunner {
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("ALTER TABLE contracts ALTER COLUMN digital_signature_pyme TYPE TEXT");
             statement.execute("ALTER TABLE contracts ALTER COLUMN digital_signature_freelancer TYPE TEXT");
+        } catch (Exception e) {
+            // Ignore in H2 during tests
         }
 
         // 1. Seed Roles
@@ -83,7 +87,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         Skill java = getOrSeedSkill("Java", "Backend");
         Skill spring = getOrSeedSkill("Spring Boot", "Backend");
         Skill react = getOrSeedSkill("React", "Frontend");
-        Skill docker = getOrSeedSkill("Docker", "DevOps");
+        getOrSeedSkill("Docker", "DevOps");
 
         // 3. Seed Freelancer User and Profile
         String freelancerEmail = "freelancer@example.com";

@@ -6,5 +6,11 @@ public enum MilestoneStatus {
     ENTREGADO,
     APROBADO,
     EN_DISPUTA,
-    PAGADO
+    PAGADO,
+    PENDING_FUNDING,
+    FUNDED,
+    DELIVERED,
+    REJECTED,
+    DISPUTED,
+    PAID
 }
