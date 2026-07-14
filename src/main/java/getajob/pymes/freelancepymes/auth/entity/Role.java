@@ -29,7 +29,7 @@ public class Role {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "role_name", nullable = false, length = 20)
+    @Column(name = "role_name", nullable = false, length = 20)
     private RoleName name;
 
     @ManyToMany(fetch = FetchType.EAGER)

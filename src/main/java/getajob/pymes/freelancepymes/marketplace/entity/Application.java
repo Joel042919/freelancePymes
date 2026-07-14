@@ -43,7 +43,7 @@ public class Application {
     private Integer estimatedDays;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "application_status")
+    @Column(name = "status")
     private ApplicationStatus status;
 }
 

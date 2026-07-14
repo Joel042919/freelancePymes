@@ -23,6 +23,6 @@ public class Permiso {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "permisos_name", nullable = false, length = 50)
+    @Column(name = "permisos_name", nullable = false, length = 50)
     private PermisosName name;
 }

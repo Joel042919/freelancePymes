@@ -40,6 +40,6 @@ public class Milestone {
     private LocalDate deadline;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "milestone_status")
+    @Column(name = "status")
     private MilestoneStatus status;
 }
