@@ -51,7 +51,7 @@ public class OfferMilestone {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(columnDefinition = "offer_milestone_status", nullable = false)
+    @Column(name = "status", nullable = false)
     private MilestoneStatus status;
 
     @Column(name = "due_date", nullable = false)

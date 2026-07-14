@@ -36,7 +36,7 @@ public class AuditLog {
     private UUID recordId;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "audit_action")
+    @Column(name = "action")
     private AuditAction action;
 
     @JdbcTypeCode(SqlTypes.JSON)

@@ -41,6 +41,6 @@ public class Contract {
     private String digitalSignatureFreelancer;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "contract_status")
+    @Column(name = "status")
     private ContractStatus status;
 }

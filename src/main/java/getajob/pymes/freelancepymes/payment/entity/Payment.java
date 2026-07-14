@@ -41,11 +41,11 @@ public class Payment {
 
     // ¿Qué tipo de movimiento es? (Fondeo de PYME o Pago a Freelancer)
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_type", columnDefinition = "payment_type", nullable = false)
+    @Column(name = "payment_type", nullable = false)
     private PaymentType paymentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", columnDefinition = "payment_method")
+    @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
     // Aquí guardas el ID que te devuelve Stripe, PayPal, Niubiz, etc.
@@ -53,7 +53,7 @@ public class Payment {
     private String transactionReference;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "payment_status", nullable = false)
+    @Column(name = "status", nullable = false)
     private PaymentStatus status;
 
     @Column(name = "created_at")

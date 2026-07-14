@@ -59,17 +59,17 @@ public class JobOffer {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "budget_type", columnDefinition = "budget_type")
+    @Column(name = "budget_type")
     private BudgetType budgetType;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "modality", columnDefinition = "modality_type")
+    @Column(name = "modality")
     private ModalityType modality;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "project_category", columnDefinition = "project_category")
+    @Column(name = "project_category")
     private ProjectCategory projectCategory;
 
     @Column(name = "estimated_days")
@@ -88,7 +88,7 @@ public class JobOffer {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(columnDefinition = "offer_status")
+    @Column(name = "status")
     private OfferStatus status;
 
     @Column(name = "published_at")
