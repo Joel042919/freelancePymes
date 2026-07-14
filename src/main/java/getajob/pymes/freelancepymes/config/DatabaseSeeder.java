@@ -23,9 +23,13 @@ import getajob.pymes.freelancepymes.marketplace.repository.JobOfferRepository;
 import getajob.pymes.freelancepymes.profile.entity.FreelancerProfile;
 import getajob.pymes.freelancepymes.profile.entity.PymeProfile;
 import getajob.pymes.freelancepymes.profile.entity.Skill;
+import getajob.pymes.freelancepymes.profile.entity.Specialty;
+import getajob.pymes.freelancepymes.profile.entity.Silabo;
 import getajob.pymes.freelancepymes.profile.repository.FreelanceProfileRepository;
 import getajob.pymes.freelancepymes.profile.repository.PymeProfileRepository;
 import getajob.pymes.freelancepymes.profile.repository.SkillRepository;
+import getajob.pymes.freelancepymes.profile.repository.SpecialtyRepository;
+import getajob.pymes.freelancepymes.profile.repository.SilaboRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -58,6 +62,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final MilestoneRepository milestoneRepository;
     private final PasswordEncoder passwordEncoder;
     private final DataSource dataSource;
+    private final SpecialtyRepository specialtyRepository;
+    private final SilaboRepository silaboRepository;
+    private final getajob.pymes.freelancepymes.profile.repository.FreelancerSpecialtyRepository freelancerSpecialtyRepository;
 
     @Override
     @Transactional
@@ -87,7 +94,48 @@ public class DatabaseSeeder implements CommandLineRunner {
         Skill java = getOrSeedSkill("Java", "Backend");
         Skill spring = getOrSeedSkill("Spring Boot", "Backend");
         Skill react = getOrSeedSkill("React", "Frontend");
-        getOrSeedSkill("Docker", "DevOps");
+        Skill docker = getOrSeedSkill("Docker", "DevOps");
+
+        // Seed Specialties
+        Specialty backendSpecialty = specialtyRepository.findByName("Desarrollador Backend");
+        if (backendSpecialty == null) {
+            backendSpecialty = new Specialty(null, "Desarrollador Backend", "Especialista en servidores y APIs", Set.of(java, spring));
+            specialtyRepository.save(backendSpecialty);
+        }
+
+        Specialty frontendSpecialty = specialtyRepository.findByName("Desarrollador Frontend");
+        if (frontendSpecialty == null) {
+            frontendSpecialty = new Specialty(null, "Desarrollador Frontend", "Especialista en UI/UX", Set.of(react));
+            specialtyRepository.save(frontendSpecialty);
+        }
+
+        Specialty devopsSpecialty = specialtyRepository.findByName("DevOps Engineer");
+        if (devopsSpecialty == null) {
+            devopsSpecialty = new Specialty(null, "DevOps Engineer", "Infraestructura y contenedores", Set.of(docker));
+            specialtyRepository.save(devopsSpecialty);
+        }
+
+        // Seed Silabos
+        if (silaboRepository.findBySkillId(react.getId()).isEmpty()) {
+            silaboRepository.save(new Silabo(null, react, "Componentes React", "Uso de estado, hooks y ciclo de vida"));
+            silaboRepository.save(new Silabo(null, react, "React Router", "Navegación y rutas"));
+            silaboRepository.save(new Silabo(null, react, "Gestión de Estado", "Redux o Context API"));
+        }
+        if (silaboRepository.findBySkillId(spring.getId()).isEmpty()) {
+            silaboRepository.save(new Silabo(null, spring, "Spring Core", "Inyección de dependencias y beans"));
+            silaboRepository.save(new Silabo(null, spring, "Spring Boot Web", "Creación de APIs REST"));
+            silaboRepository.save(new Silabo(null, spring, "Spring Data JPA", "Mapeo objeto-relacional"));
+        }
+        if (silaboRepository.findBySkillId(java.getId()).isEmpty()) {
+            silaboRepository.save(new Silabo(null, java, "Programación Orientada a Objetos", "Clases, herencia, polimorfismo en Java"));
+            silaboRepository.save(new Silabo(null, java, "Colecciones y Streams", "Listas, Mapas, Filter, Map, Reduce"));
+            silaboRepository.save(new Silabo(null, java, "Concurrencia", "Hilos, CompletableFuture, Executors"));
+        }
+        if (silaboRepository.findBySkillId(docker.getId()).isEmpty()) {
+            silaboRepository.save(new Silabo(null, docker, "Fundamentos de Contenedores", "Diferencia entre VM y Docker"));
+            silaboRepository.save(new Silabo(null, docker, "Imágenes y Dockerfile", "Creación de imágenes y optimización"));
+            silaboRepository.save(new Silabo(null, docker, "Docker Compose", "Orquestación multi-contenedor local"));
+        }
 
         // 3. Seed Freelancer User and Profile
         String freelancerEmail = "freelancer@example.com";
@@ -114,14 +162,32 @@ public class DatabaseSeeder implements CommandLineRunner {
             freelancerProfile.setBio("Experienced Java developer");
             freelancerProfile.setSkills(Set.of(java, spring));
             savedFreelancer = freelanceProfileRepository.save(freelancerProfile);
-
-            // 3b. Seed passed assessments for Java and Spring Boot (validated skills)
-            seedAssessment(savedFreelancer, java, 90.0, true);
-            seedAssessment(savedFreelancer, spring, 85.0, true);
+            savedFreelancer = freelanceProfileRepository.save(freelancerProfile);
         } else {
             User user = userRepository.findByEmail(freelancerEmail).orElse(null);
             if (user != null) {
                 savedFreelancer = freelanceProfileRepository.findById(user.getId()).orElse(null);
+            }
+        }
+
+        if (savedFreelancer != null) {
+            // Remove previous assessments to reset state
+            assessmentRepository.deleteAll(assessmentRepository.findByFreelancer(savedFreelancer));
+
+            // Force Skill Gap: Clear all skills and only add Java and Spring
+            savedFreelancer.getSkills().clear();
+            savedFreelancer.getSkills().add(java);
+            savedFreelancer.getSkills().add(spring);
+            freelanceProfileRepository.save(savedFreelancer);
+
+            // Assign Specialties
+            if (freelancerSpecialtyRepository.findByFreelancerProfile_Id(savedFreelancer.getId()).isEmpty()) {
+                freelancerSpecialtyRepository.save(new getajob.pymes.freelancepymes.profile.entity.FreelancerSpecialty(
+                    null, savedFreelancer, backendSpecialty, null, LocalDateTime.now()
+                ));
+                freelancerSpecialtyRepository.save(new getajob.pymes.freelancepymes.profile.entity.FreelancerSpecialty(
+                    null, savedFreelancer, devopsSpecialty, null, LocalDateTime.now()
+                ));
             }
         }
 

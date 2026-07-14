@@ -42,6 +42,30 @@ public class PaypalService {
         throw new RuntimeException("Error obtaining PayPal access token");
     }
 
+    public Map<String, Object> createOrder(Double amount) {
+        String accessToken = getAccessToken();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+
+        java.util.Map<String, Object> amountData = new java.util.HashMap<>();
+        amountData.put("currency_code", "USD");
+        amountData.put("value", String.format(java.util.Locale.US, "%.2f", amount));
+
+        java.util.Map<String, Object> purchaseUnit = new java.util.HashMap<>();
+        purchaseUnit.put("amount", amountData);
+
+        java.util.Map<String, Object> requestBody = new java.util.HashMap<>();
+        requestBody.put("intent", "CAPTURE");
+        requestBody.put("purchase_units", java.util.List.of(purchaseUnit));
+
+        HttpEntity<java.util.Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<Map> response = restTemplate.postForEntity(BASE_URL_SANDBOX + "/v2/checkout/orders", request, Map.class);
+
+        return response.getBody();
+    }
+
     public boolean captureOrder(String orderId) {
         String accessToken = getAccessToken();
         RestTemplate restTemplate = new RestTemplate();
